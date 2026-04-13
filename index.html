@@ -3,36 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';">
   <title>StandLeo Team Finder</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
     :root { color-scheme: dark; }
     html, body { height: 100%; }
     body { margin: 0; overflow: hidden; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-    .tab-btn.active { background: #082f49; border-color: #22d3ee99; color: #a5f3fc; }
-    .picker-btn { border: 1px solid rgb(51 65 85); border-radius: 10px; padding: 10px 12px; font-size: 13px; text-align: left; background: rgb(15 23 42); }
-    .picker-btn:hover { border-color: rgb(71 85 105); }
+    .tab-btn.active { border-color: #22d3ee; color: #67e8f9; background: rgba(8, 47, 73, 0.45); }
+    .pill { border: 1px solid rgb(51 65 85); border-radius: 10px; padding: 9px 12px; font-size: 13px; background: rgb(15 23 42); text-align: left; }
+    .pill:hover { border-color: rgb(71 85 105); }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100">
   <div class="flex h-screen flex-col">
     <header class="border-b border-slate-800 bg-slate-950/95">
-      <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
         <div>
           <div class="text-xs uppercase tracking-[0.24em] text-cyan-300">StandLeo</div>
-          <h1 class="text-lg font-semibold sm:text-xl">Поиск тиммейтов</h1>
+          <h1 class="text-lg font-semibold sm:text-xl">Поиск тиммейтов и команд</h1>
         </div>
         <div class="flex items-center gap-2">
           <a href="https://t.me/h1nston" target="_blank" rel="noopener" class="rounded-lg border border-slate-700 px-3 py-2 text-xs hover:border-cyan-500">t.me/h1nston</a>
-          <button id="openCreate" class="rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-400">Создать</button>
-          <button id="logoutBtn" class="rounded-lg border border-slate-700 px-3 py-2 text-xs hover:border-slate-500">Сменить профиль</button>
+          <button id="createOpenBtn" class="rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-400">Создать</button>
         </div>
       </div>
       <div class="mx-auto hidden w-full max-w-6xl gap-2 px-4 pb-3 sm:flex sm:px-6">
-        <button class="tab-btn active rounded-lg border border-slate-700 px-3 py-2 text-sm" data-tab="feed">Объявления</button>
+        <button class="tab-btn active rounded-lg border border-slate-700 px-3 py-2 text-sm" data-tab="feed">Лента</button>
         <button class="tab-btn rounded-lg border border-slate-700 px-3 py-2 text-sm" data-tab="my">Мои</button>
-        <button class="tab-btn rounded-lg border border-slate-700 px-3 py-2 text-sm" data-tab="messages">Сообщения</button>
+        <button class="tab-btn rounded-lg border border-slate-700 px-3 py-2 text-sm" data-tab="chats">Сообщения</button>
         <button class="tab-btn rounded-lg border border-slate-700 px-3 py-2 text-sm" data-tab="settings">Настройки</button>
       </div>
     </header>
@@ -40,40 +38,40 @@
     <main class="mx-auto w-full max-w-6xl flex-1 overflow-hidden px-4 pb-16 pt-4 sm:px-6 sm:pb-4">
       <section id="tab-feed" class="flex h-full flex-col gap-3 overflow-hidden">
         <div class="grid gap-2 sm:grid-cols-[1fr_auto_auto]">
-          <input id="searchInput" placeholder="Поиск по объявлениям" class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm">
-          <button id="toggleFilters" class="rounded-lg border border-slate-700 px-3 py-2 text-sm hover:border-slate-500">Фильтры</button>
-          <button id="resetFilters" class="rounded-lg border border-slate-700 px-3 py-2 text-sm hover:border-slate-500">Сброс</button>
+          <input id="searchInput" placeholder="Поиск по заголовку, нику, клану, ID" class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm">
+          <button id="filtersToggleBtn" class="rounded-lg border border-slate-700 px-3 py-2 text-sm hover:border-slate-500">Фильтры</button>
+          <button id="filtersResetBtn" class="rounded-lg border border-slate-700 px-3 py-2 text-sm hover:border-slate-500">Сброс</button>
         </div>
 
         <div id="filtersPanel" class="hidden rounded-xl border border-slate-800 bg-slate-900/60 p-3">
           <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            <button id="fModeBtn" class="picker-btn" data-picker="mode" data-target="fMode" data-label="Режим" data-empty="Любой"></button>
-            <button id="fRegionBtn" class="picker-btn" data-picker="region" data-target="fRegion" data-label="Регион" data-empty="Любой"></button>
-            <button id="fRankBtn" class="picker-btn" data-picker="rank" data-target="fRank" data-label="Ранг" data-empty="Любой"></button>
-            <button id="fKdBtn" class="picker-btn" data-picker="kd" data-target="fKd" data-label="KD" data-empty="Любой"></button>
-            <button id="fHoursBtn" class="picker-btn" data-picker="hours" data-target="fHours" data-label="Часы" data-empty="Любые"></button>
-            <button id="fVoiceBtn" class="picker-btn" data-picker="voice" data-target="fVoice" data-label="Голос" data-empty="Любой"></button>
+            <button class="pill" data-picker="mode" data-target="filterMode" data-label="Режим" data-empty="Любой"></button>
+            <button class="pill" data-picker="region" data-target="filterRegion" data-label="Регион" data-empty="Любой"></button>
+            <button class="pill" data-picker="rank" data-target="filterRank" data-label="Треб. ранг" data-empty="Любой"></button>
+            <button class="pill" data-picker="kd" data-target="filterKd" data-label="Треб. KD" data-empty="Любой"></button>
+            <button class="pill" data-picker="hours" data-target="filterHours" data-label="Треб. часы" data-empty="Любые"></button>
+            <button class="pill" data-picker="voiceFilter" data-target="filterVoice" data-label="Голос" data-empty="Любой"></button>
           </div>
-          <input id="fMode" type="hidden" value="">
-          <input id="fRegion" type="hidden" value="">
-          <input id="fRank" type="hidden" value="">
-          <input id="fKd" type="hidden" value="">
-          <input id="fHours" type="hidden" value="">
-          <input id="fVoice" type="hidden" value="">
+          <input id="filterMode" type="hidden">
+          <input id="filterRegion" type="hidden">
+          <input id="filterRank" type="hidden">
+          <input id="filterKd" type="hidden">
+          <input id="filterHours" type="hidden">
+          <input id="filterVoice" type="hidden">
         </div>
 
         <div class="flex items-center justify-between text-xs text-slate-400">
-          <span id="adsCount">0 объявлений</span>
+          <span id="feedCount">0 объявлений</span>
         </div>
-        <div id="adsList" class="flex-1 overflow-y-auto pr-1"></div>
+        <div id="feedList" class="flex-1 overflow-y-auto pr-1"></div>
       </section>
 
       <section id="tab-my" class="hidden h-full overflow-y-auto pr-1">
-        <div id="myAdsList" class="space-y-3"></div>
+        <div id="myList" class="space-y-3"></div>
       </section>
 
-      <section id="tab-messages" class="hidden h-full overflow-y-auto pr-1">
-        <div id="threadsList" class="space-y-2"></div>
+      <section id="tab-chats" class="hidden h-full overflow-y-auto pr-1">
+        <div id="chatsList" class="space-y-2"></div>
       </section>
 
       <section id="tab-settings" class="hidden h-full overflow-y-auto pr-1">
@@ -83,14 +81,17 @@
             <input name="nickname" required maxlength="20" placeholder="Ник" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm">
             <input id="settingsGameId" name="gameId" required maxlength="20" placeholder="Игровой ID" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm">
             <input name="clan" maxlength="20" placeholder="Клан" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm">
-            <button id="settingsRankBtn" type="button" class="picker-btn" data-picker="rank" data-target="settingsRank" data-label="Ранг" data-empty="Выбрать"></button>
-            <button id="settingsKdBtn" type="button" class="picker-btn" data-picker="kd" data-target="settingsKd" data-label="KD" data-empty="Выбрать"></button>
-            <button id="settingsHoursBtn" type="button" class="picker-btn" data-picker="hours" data-target="settingsHours" data-label="Часы" data-empty="Выбрать"></button>
+            <button type="button" class="pill" data-picker="rank" data-target="settingsRank" data-label="Ранг" data-empty="Выбрать"></button>
+            <button type="button" class="pill" data-picker="kd" data-target="settingsKd" data-label="KD" data-empty="Выбрать"></button>
+            <button type="button" class="pill" data-picker="hours" data-target="settingsHours" data-label="Часы" data-empty="Выбрать"></button>
           </div>
           <input id="settingsRank" name="rank" type="hidden">
           <input id="settingsKd" name="kd" type="hidden">
           <input id="settingsHours" name="hours" type="hidden">
-          <button class="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-400">Сохранить</button>
+          <div class="flex gap-2">
+            <button class="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-400">Сохранить</button>
+            <button id="logoutBtn" type="button" class="rounded-lg border border-slate-700 px-4 py-2 text-sm hover:border-slate-500">Сменить профиль</button>
+          </div>
         </form>
       </section>
     </main>
@@ -98,41 +99,41 @@
     <nav class="fixed bottom-0 left-0 right-0 grid grid-cols-4 gap-1 border-t border-slate-800 bg-slate-950 p-2 sm:hidden">
       <button class="tab-btn active rounded-lg border border-slate-700 py-2 text-xs" data-tab="feed">Лента</button>
       <button class="tab-btn rounded-lg border border-slate-700 py-2 text-xs" data-tab="my">Мои</button>
-      <button class="tab-btn rounded-lg border border-slate-700 py-2 text-xs" data-tab="messages">Чаты</button>
+      <button class="tab-btn rounded-lg border border-slate-700 py-2 text-xs" data-tab="chats">Чаты</button>
       <button class="tab-btn rounded-lg border border-slate-700 py-2 text-xs" data-tab="settings">Настройки</button>
     </nav>
   </div>
 
-  <div id="createModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-slate-950/80 p-4">
-    <form id="adForm" class="w-full max-w-xl space-y-3 rounded-xl border border-slate-800 bg-slate-900 p-4">
+  <div id="createModal" class="fixed inset-0 z-40 hidden items-end justify-center bg-slate-950/85 p-4 sm:items-center">
+    <form id="createForm" class="w-full max-w-xl space-y-3 rounded-xl border border-slate-800 bg-slate-900 p-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold">Создать объявление</h2>
-        <button id="closeCreate" type="button" class="rounded border border-slate-700 px-2 py-1 text-xs">Закрыть</button>
+        <h2 class="text-lg font-semibold">Новое объявление</h2>
+        <button id="createCloseBtn" type="button" class="rounded border border-slate-700 px-2 py-1 text-xs">Закрыть</button>
       </div>
       <input name="title" required maxlength="70" placeholder="Заголовок" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm">
-      <textarea name="description" required maxlength="220" rows="4" placeholder="Описание" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm"></textarea>
+      <textarea name="description" required maxlength="260" rows="4" placeholder="Кого ищешь и на какой режим" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm"></textarea>
       <div class="grid gap-2 sm:grid-cols-2">
-        <button id="adModeBtn" type="button" class="picker-btn" data-picker="mode" data-target="adMode" data-label="Режим" data-empty="Выбрать"></button>
-        <button id="adRegionBtn" type="button" class="picker-btn" data-picker="region" data-target="adRegion" data-label="Регион" data-empty="Выбрать"></button>
-        <button id="adReqRankBtn" type="button" class="picker-btn" data-picker="rank" data-target="adReqRank" data-label="Треб. ранг" data-empty="Любой"></button>
-        <button id="adReqKdBtn" type="button" class="picker-btn" data-picker="kd" data-target="adReqKd" data-label="Треб. KD" data-empty="Любой"></button>
-        <button id="adReqHoursBtn" type="button" class="picker-btn" data-picker="hours" data-target="adReqHours" data-label="Треб. часы" data-empty="Любые"></button>
-        <button id="adVoiceBtn" type="button" class="picker-btn" data-picker="voice" data-target="adVoice" data-label="Голос" data-empty="Не важно"></button>
+        <button type="button" class="pill" data-picker="mode" data-target="adMode" data-label="Режим" data-empty="Выбрать"></button>
+        <button type="button" class="pill" data-picker="region" data-target="adRegion" data-label="Регион" data-empty="Выбрать"></button>
+        <button type="button" class="pill" data-picker="rank" data-target="adReqRank" data-label="Треб. ранг" data-empty="Любой"></button>
+        <button type="button" class="pill" data-picker="kd" data-target="adReqKd" data-label="Треб. KD" data-empty="Любой"></button>
+        <button type="button" class="pill" data-picker="hours" data-target="adReqHours" data-label="Треб. часы" data-empty="Любые"></button>
+        <button type="button" class="pill" data-picker="voiceAd" data-target="adVoice" data-label="Голос" data-empty="Не важно"></button>
       </div>
       <input id="adMode" name="mode" type="hidden">
       <input id="adRegion" name="region" type="hidden">
-      <input id="adReqRank" name="reqRank" type="hidden" value="">
-      <input id="adReqKd" name="reqKd" type="hidden" value="">
-      <input id="adReqHours" name="reqHours" type="hidden" value="">
-      <input id="adVoice" name="voice" type="hidden" value="">
+      <input id="adReqRank" name="reqRank" type="hidden">
+      <input id="adReqKd" name="reqKd" type="hidden">
+      <input id="adReqHours" name="reqHours" type="hidden">
+      <input id="adVoice" name="voice" type="hidden">
       <button class="w-full rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-400">Опубликовать</button>
     </form>
   </div>
 
   <aside id="chatPanel" class="fixed right-0 top-0 z-50 hidden h-full w-full max-w-md border-l border-slate-800 bg-slate-950 p-4">
     <div class="flex items-center justify-between">
-      <h3 class="text-lg font-semibold">Чат</h3>
-      <button id="closeChat" class="rounded border border-slate-700 px-2 py-1 text-xs">Закрыть</button>
+      <h2 class="text-lg font-semibold">Чат</h2>
+      <button id="chatCloseBtn" class="rounded border border-slate-700 px-2 py-1 text-xs">Закрыть</button>
     </div>
     <div id="chatMeta" class="mt-1 text-xs text-slate-400"></div>
     <div id="chatMessages" class="mt-3 h-[70vh] space-y-2 overflow-y-auto pr-1"></div>
@@ -144,14 +145,15 @@
 
   <div id="authOverlay" class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/95 p-4">
     <form id="authForm" class="w-full max-w-xl space-y-3 rounded-xl border border-slate-800 bg-slate-900 p-5">
-      <h2 class="text-xl font-semibold">Регистрация</h2>
+      <h2 class="text-xl font-semibold">Профиль</h2>
+      <p class="text-sm text-slate-400">Создай профиль, чтобы публиковать объявления и писать командам.</p>
       <div class="grid gap-3 sm:grid-cols-2">
         <input name="nickname" required maxlength="20" placeholder="Ник" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm">
         <input id="authGameId" name="gameId" required maxlength="20" placeholder="Игровой ID" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm">
         <input name="clan" maxlength="20" placeholder="Клан" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm">
-        <button id="authRankBtn" type="button" class="picker-btn" data-picker="rank" data-target="authRank" data-label="Ранг" data-empty="Выбрать"></button>
-        <button id="authKdBtn" type="button" class="picker-btn" data-picker="kd" data-target="authKd" data-label="KD" data-empty="Выбрать"></button>
-        <button id="authHoursBtn" type="button" class="picker-btn" data-picker="hours" data-target="authHours" data-label="Часы" data-empty="Выбрать"></button>
+        <button type="button" class="pill" data-picker="rank" data-target="authRank" data-label="Ранг" data-empty="Выбрать"></button>
+        <button type="button" class="pill" data-picker="kd" data-target="authKd" data-label="KD" data-empty="Выбрать"></button>
+        <button type="button" class="pill" data-picker="hours" data-target="authHours" data-label="Часы" data-empty="Выбрать"></button>
       </div>
       <input id="authRank" name="rank" type="hidden">
       <input id="authKd" name="kd" type="hidden">
@@ -164,14 +166,14 @@
     <div class="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-900 p-4">
       <div class="mb-3 flex items-center justify-between">
         <h3 id="pickerTitle" class="text-lg font-semibold">Выбор</h3>
-        <button id="pickerClose" class="rounded border border-slate-700 px-2 py-1 text-xs">Закрыть</button>
+        <button id="pickerCloseBtn" class="rounded border border-slate-700 px-2 py-1 text-xs">Закрыть</button>
       </div>
       <div id="pickerOptions" class="grid max-h-[55vh] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-2"></div>
     </div>
   </div>
 
   <template id="adTemplate">
-    <article class="mb-3 rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+    <article class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
       <div class="flex items-start justify-between gap-2">
         <div>
           <h3 class="ad-title text-base font-semibold"></h3>
@@ -188,50 +190,49 @@
   <script>
     (() => {
       const KEYS = {
-        profile: 'standleo_profile_v5',
-        ads: 'standleo_ads_v5',
-        chats: 'standleo_chats_v5',
-        limits: 'standleo_limits_v5'
+        profile: 'standleo_profile_v6',
+        ads: 'standleo_ads_v6',
+        chats: 'standleo_chats_v6',
+        limits: 'standleo_limits_v6'
       };
 
       const RANKS = ['Bronze', 'Silver', 'Gold', 'Phoenix', 'Ranger', 'Champion', 'Master', 'Elite', 'Legend'];
-      const KDS = ['0.00-0.50', '0.50-1.00', '1.00-1.50', '1.50-2.00', '2.00-2.50', '2.50-3.00', '3.50-4.00', '4.50-5.00', '5.00+'];
-      const HOURS = ['0-50', '50-100', '100-250', '250-500', '500-750', '750-1000', '1000-1500', '1500+'];
-      const MODES = ['Соревновательный', 'Кланвар', 'Напарники', 'Турнир'];
-      const REGIONS = ['RU', 'EU', 'RU/EU', 'Любой'];
-      const VOICE_FILTER = ['Только с голосом', 'Только без голоса'];
-      const VOICE_AD = ['Нужен голос', 'Голос не нужен'];
+      const KD_VALUES = ['0.00-0.50', '0.50-1.00', '1.00-1.50', '1.50-2.00', '2.00-2.50', '2.50-3.00', '3.50-4.00', '4.50-5.00', '5.00+'];
+      const HOUR_VALUES = ['0-50', '50-100', '100-250', '250-500', '500-750', '750-1000', '1000-1500', '1500+'];
+      const MODE_VALUES = ['Соревновательный', 'Кланвар', 'Турнир', 'Напарники'];
+      const REGION_VALUES = ['RU', 'EU', 'RU/EU', 'Любой'];
+      const VOICE_FILTER_VALUES = ['Только с голосом', 'Только без голоса'];
+      const VOICE_AD_VALUES = ['Нужен голос', 'Без голоса'];
 
-      const LOOKUPS = {
+      const PICKERS = {
         rank: RANKS,
-        kd: KDS,
-        hours: HOURS,
-        mode: MODES,
-        region: REGIONS,
-        voice: VOICE_FILTER,
-        adVoice: VOICE_AD
+        kd: KD_VALUES,
+        hours: HOUR_VALUES,
+        mode: MODE_VALUES,
+        region: REGION_VALUES,
+        voiceFilter: VOICE_FILTER_VALUES,
+        voiceAd: VOICE_AD_VALUES
       };
 
-      const qs = (s, p = document) => p.querySelector(s);
-      const qsa = (s, p = document) => Array.from(p.querySelectorAll(s));
-      const load = (k, f) => {
+      const $ = (s, p = document) => p.querySelector(s);
+      const $$ = (s, p = document) => Array.from(p.querySelectorAll(s));
+      const sanitize = (v) => String(v || '').trim().replace(/\s+/g, ' ');
+      const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+
+      const load = (k, fallback) => {
         try {
-          return JSON.parse(localStorage.getItem(k)) ?? f;
+          const v = localStorage.getItem(k);
+          return v ? JSON.parse(v) : fallback;
         } catch {
-          return f;
+          return fallback;
         }
       };
       const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-      const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
-      const channel = 'BroadcastChannel' in window ? new BroadcastChannel('standleo_live_v5') : null;
-      const sync = () => {
-        if (channel) {
-          channel.postMessage({ ts: Date.now() });
-        } else {
-          localStorage.setItem('standleo_ping_v5', String(Date.now()));
-        }
-      };
+      const hasLink = (t) => /(https?:\/\/|www\.|t\.me\/|discord\.gg|@\w+)/i.test(t);
+      const bannedWords = ['нарко', 'заклад', 'порно', 'взлом', 'читы'];
+      const hasBanned = (t) => bannedWords.some((w) => t.toLowerCase().includes(w));
+      const isValidGameId = (id) => /^[A-Za-z0-9]{4,20}$/.test(id);
 
       const state = {
         profile: load(KEYS.profile, null),
@@ -239,37 +240,52 @@
         chats: load(KEYS.chats, {}),
         limits: load(KEYS.limits, {}),
         tab: 'feed',
-        activeChatAd: null,
+        activeChatAdId: null,
         picker: null
       };
 
-      const sanitize = (s) => String(s || '').trim().replace(/\s+/g, ' ');
-      const hasLink = (s) => /(https?:\/\/|www\.|t\.me\/|discord\.gg|@\w+)/i.test(s);
-      const bannedWords = ['нарко', 'заклад', 'порно', 'спам', 'взлом', 'читы'];
-      const hasBanned = (s) => bannedWords.some((w) => s.toLowerCase().includes(w));
-      const idValid = (s) => /^[A-Za-z0-9]{4,20}$/.test(s);
+      const channel = 'BroadcastChannel' in window ? new BroadcastChannel('standleo_live_v6') : null;
+      const sync = () => {
+        if (channel) channel.postMessage({ at: Date.now() });
+        localStorage.setItem('standleo_sync_v6', String(Date.now()));
+      };
 
-      const setPickerText = (btn, value) => {
-        const label = btn.dataset.label;
+      const getLimitState = () => {
+        if (!state.profile) return null;
+        if (!state.limits[state.profile.uid]) {
+          state.limits[state.profile.uid] = { adTimes: [], lastAdHash: '', lastMsgAt: 0, lastMsgHash: '' };
+        }
+        return state.limits[state.profile.uid];
+      };
+
+      const setTab = (tab) => {
+        state.tab = tab;
+        ['feed', 'my', 'chats', 'settings'].forEach((name) => {
+          $(`#tab-${name}`).classList.toggle('hidden', name !== tab);
+        });
+        $$('.tab-btn').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab));
+      };
+
+      const setPickerButtonText = (btn, value) => {
         const empty = btn.dataset.empty || 'Не выбрано';
-        btn.textContent = `${label}: ${value || empty}`;
+        btn.textContent = `${btn.dataset.label}: ${value || empty}`;
       };
 
-      const setFieldValue = (targetId, value) => {
-        const input = qs(`#${targetId}`);
-        if (!input) return;
-        input.value = value;
-        const btn = qsa('[data-target]').find((x) => x.dataset.target === targetId);
-        if (btn) setPickerText(btn, value);
+      const setFieldValue = (fieldId, value) => {
+        const field = $(`#${fieldId}`);
+        if (!field) return;
+        field.value = value || '';
+        const btn = $$('[data-target]').find((x) => x.dataset.target === fieldId);
+        if (btn) setPickerButtonText(btn, field.value);
       };
 
-      const openPicker = ({ title, options, current, allowEmpty, onPick }) => {
+      const openPicker = ({ title, options, current, emptyLabel, onPick }) => {
         state.picker = { onPick };
-        qs('#pickerTitle').textContent = title;
-        const root = qs('#pickerOptions');
+        $('#pickerTitle').textContent = title;
+        const root = $('#pickerOptions');
         root.innerHTML = '';
 
-        const addButton = (value, text) => {
+        const makeOption = (value, text) => {
           const b = document.createElement('button');
           b.type = 'button';
           b.className = `rounded-lg border px-3 py-2 text-left text-sm ${value === current ? 'border-cyan-500 bg-cyan-950/40' : 'border-slate-700 bg-slate-950 hover:border-slate-500'}`;
@@ -281,68 +297,43 @@
           root.append(b);
         };
 
-        if (allowEmpty) addButton('', allowEmpty);
-        options.forEach((opt) => addButton(opt, opt));
-        qs('#pickerModal').classList.remove('hidden');
-        qs('#pickerModal').classList.add('flex');
+        if (emptyLabel) makeOption('', emptyLabel);
+        options.forEach((opt) => makeOption(opt, opt));
+
+        $('#pickerModal').classList.remove('hidden');
+        $('#pickerModal').classList.add('flex');
       };
 
       const closePicker = () => {
-        qs('#pickerModal').classList.add('hidden');
-        qs('#pickerModal').classList.remove('flex');
+        $('#pickerModal').classList.add('hidden');
+        $('#pickerModal').classList.remove('flex');
       };
 
-      const getLimit = () => {
-        if (!state.profile) return null;
-        if (!state.limits[state.profile.uid]) {
-          state.limits[state.profile.uid] = { adTimes: [], lastAdHash: '', lastChatAt: 0, lastMsgHash: '' };
-        }
-        return state.limits[state.profile.uid];
+      const formatDate = (ts) => new Date(ts).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+      const adMatchesFilters = (ad) => {
+        const q = $('#searchInput').value.trim().toLowerCase();
+        const mode = $('#filterMode').value;
+        const region = $('#filterRegion').value;
+        const rank = $('#filterRank').value;
+        const kd = $('#filterKd').value;
+        const hours = $('#filterHours').value;
+        const voice = $('#filterVoice').value;
+
+        if (mode && ad.mode !== mode) return false;
+        if (region && ad.region !== region) return false;
+        if (rank && ad.reqRank !== rank) return false;
+        if (kd && ad.reqKd !== kd) return false;
+        if (hours && ad.reqHours !== hours) return false;
+        if (voice === 'Только с голосом' && !ad.voiceNeeded) return false;
+        if (voice === 'Только без голоса' && ad.voiceNeeded) return false;
+
+        if (!q) return true;
+        const text = `${ad.title} ${ad.description} ${ad.author.nickname} ${ad.author.clan} ${ad.author.gameId}`.toLowerCase();
+        return text.includes(q);
       };
 
-      const formatDate = (ts) => {
-        const d = new Date(ts);
-        return d.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-      };
-
-      const showTab = (tab) => {
-        state.tab = tab;
-        ['feed', 'my', 'messages', 'settings'].forEach((name) => {
-          const pane = qs(`#tab-${name}`);
-          pane.classList.toggle('hidden', name !== tab);
-        });
-        qsa('.tab-btn').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab));
-      };
-
-      const readFilters = () => ({
-        q: qs('#searchInput').value.trim().toLowerCase(),
-        mode: qs('#fMode').value,
-        region: qs('#fRegion').value,
-        rank: qs('#fRank').value,
-        kd: qs('#fKd').value,
-        hours: qs('#fHours').value,
-        voice: qs('#fVoice').value
-      });
-
-      const filteredAds = () => {
-        const f = readFilters();
-        return [...state.ads]
-          .sort((a, b) => b.createdAt - a.createdAt)
-          .filter((ad) => {
-            if (f.mode && ad.mode !== f.mode) return false;
-            if (f.region && ad.region !== f.region) return false;
-            if (f.rank && ad.reqRank !== f.rank) return false;
-            if (f.kd && ad.reqKd !== f.kd) return false;
-            if (f.hours && ad.reqHours !== f.hours) return false;
-            if (f.voice === 'Только с голосом' && !ad.voice) return false;
-            if (f.voice === 'Только без голоса' && ad.voice) return false;
-            if (!f.q) return true;
-            const text = `${ad.title} ${ad.description} ${ad.author.nickname} ${ad.author.clan} ${ad.author.gameId}`.toLowerCase();
-            return text.includes(f.q);
-          });
-      };
-
-      const makeTag = (text) => {
+      const tag = (text) => {
         const span = document.createElement('span');
         span.className = 'rounded border border-slate-700 px-2 py-1 text-xs text-slate-300';
         span.textContent = text;
@@ -351,52 +342,53 @@
 
       const openChat = (adId) => {
         const ad = state.ads.find((x) => x.id === adId);
-        if (state.profile && ad && ad.authorUid === state.profile.uid) {
+        if (!ad || !state.profile) return;
+        if (ad.authorUid === state.profile.uid) {
           alert('Нельзя писать самому себе.');
           return;
         }
-        state.activeChatAd = adId;
-        qs('#chatPanel').classList.remove('hidden');
+        state.activeChatAdId = adId;
+        $('#chatPanel').classList.remove('hidden');
         renderChat();
       };
 
-      const renderAds = () => {
-        const root = qs('#adsList');
-        const myRoot = qs('#myAdsList');
+      const renderFeed = () => {
+        const root = $('#feedList');
         root.innerHTML = '';
-        myRoot.innerHTML = '';
 
-        const list = filteredAds();
-        qs('#adsCount').textContent = `${list.length} объявлений`;
+        const list = [...state.ads].sort((a, b) => b.createdAt - a.createdAt).filter(adMatchesFilters);
+        $('#feedCount').textContent = `${list.length} объявлений`;
+
         if (!list.length) {
-          root.innerHTML = '<div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-400">Ничего не найдено.</div>';
+          root.innerHTML = '<div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-400">Объявлений не найдено.</div>';
+          return;
         }
 
-        const tpl = qs('#adTemplate');
+        const tpl = $('#adTemplate');
         list.forEach((ad) => {
           const node = tpl.content.firstElementChild.cloneNode(true);
-          qs('.ad-title', node).textContent = ad.title;
-          qs('.ad-desc', node).textContent = ad.description;
-          qs('.ad-time', node).textContent = formatDate(ad.createdAt);
-          qs('.ad-meta', node).textContent = `${ad.author.nickname} (${ad.author.gameId}) | ${ad.author.clan || 'Без клана'} | ${ad.author.rank} | KD ${ad.author.kd} | ${ad.author.hours} ч`;
+          $('.ad-title', node).textContent = ad.title;
+          $('.ad-meta', node).textContent = `${ad.author.nickname} (${ad.author.gameId}) | ${ad.author.clan || 'Без клана'} | ${ad.author.rank} | KD ${ad.author.kd} | ${ad.author.hours} ч`;
+          $('.ad-time', node).textContent = formatDate(ad.createdAt);
+          $('.ad-desc', node).textContent = ad.description;
 
-          const tags = qs('.ad-tags', node);
-          [ad.mode, ad.region, `Треб. ранг: ${ad.reqRank || 'Любой'}`, `Треб. KD: ${ad.reqKd || 'Любой'}`, `Треб. часы: ${ad.reqHours || 'Любые'}`, ad.voice ? 'С голосом' : 'Без голоса'].forEach((t) => tags.append(makeTag(t)));
+          const tags = $('.ad-tags', node);
+          [ad.mode, ad.region, `Треб. ранг: ${ad.reqRank || 'Любой'}`, `Треб. KD: ${ad.reqKd || 'Любой'}`, `Треб. часы: ${ad.reqHours || 'Любые'}`, ad.voiceNeeded ? 'Нужен голос' : 'Без голоса'].forEach((t) => tags.append(tag(t)));
 
-          const actions = qs('.ad-actions', node);
+          const actions = $('.ad-actions', node);
           const isOwn = state.profile && ad.authorUid === state.profile.uid;
 
           if (isOwn) {
-            const note = document.createElement('span');
-            note.className = 'rounded-lg border border-cyan-800 bg-cyan-950/30 px-3 py-1.5 text-xs text-cyan-200';
-            note.textContent = 'Твое объявление';
-            actions.append(note);
+            const own = document.createElement('span');
+            own.className = 'rounded-lg border border-cyan-800 bg-cyan-950/30 px-3 py-1.5 text-xs text-cyan-200';
+            own.textContent = 'Твое объявление';
+            actions.append(own);
           } else {
-            const chatBtn = document.createElement('button');
-            chatBtn.className = 'rounded-lg bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-cyan-400';
-            chatBtn.textContent = 'Написать';
-            chatBtn.addEventListener('click', () => openChat(ad.id));
-            actions.append(chatBtn);
+            const msgBtn = document.createElement('button');
+            msgBtn.className = 'rounded-lg bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-cyan-400';
+            msgBtn.textContent = 'Написать';
+            msgBtn.addEventListener('click', () => openChat(ad.id));
+            actions.append(msgBtn);
           }
 
           const copyBtn = document.createElement('button');
@@ -406,7 +398,7 @@
             try {
               await navigator.clipboard.writeText(ad.author.gameId);
               copyBtn.textContent = 'Скопировано';
-              setTimeout(() => { copyBtn.textContent = 'Скопировать ID'; }, 1200);
+              setTimeout(() => { copyBtn.textContent = 'Скопировать ID'; }, 1000);
             } catch {
               copyBtn.textContent = ad.author.gameId;
             }
@@ -428,58 +420,63 @@
 
           root.append(node);
         });
-
-        if (!state.profile) return;
-        const myAds = [...state.ads].filter((ad) => ad.authorUid === state.profile.uid).sort((a, b) => b.createdAt - a.createdAt);
-        if (!myAds.length) {
-          myRoot.innerHTML = '<div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-400">У тебя пока нет объявлений.</div>';
-          return;
-        }
-
-        myAds.forEach((ad) => {
-          const box = document.createElement('div');
-          box.className = 'rounded-lg border border-slate-800 bg-slate-900/50 p-4';
-          box.innerHTML = `<div class="text-sm font-semibold">${ad.title}</div><div class="mt-1 text-xs text-slate-400">${formatDate(ad.createdAt)} | ${ad.mode} | ${ad.region}</div>`;
-          myRoot.append(box);
-        });
       };
 
-      const renderThreads = () => {
-        const root = qs('#threadsList');
+      const renderMy = () => {
+        const root = $('#myList');
         root.innerHTML = '';
         if (!state.profile) return;
 
-        const result = [];
-        Object.entries(state.chats).forEach(([adId, msgs]) => {
-          const hasMine = msgs.some((m) => m.senderUid === state.profile.uid);
-          if (!hasMine) return;
-          const last = msgs[msgs.length - 1];
-          const ad = state.ads.find((a) => a.id === adId);
-          result.push({ adId, ad, last });
-        });
-        result.sort((a, b) => b.last.at - a.last.at);
-
-        if (!result.length) {
-          root.innerHTML = '<div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-400">Нет сообщений.</div>';
+        const own = [...state.ads].filter((a) => a.authorUid === state.profile.uid).sort((a, b) => b.createdAt - a.createdAt);
+        if (!own.length) {
+          root.innerHTML = '<div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-400">У тебя еще нет объявлений.</div>';
           return;
         }
 
-        result.forEach((t) => {
-          const b = document.createElement('button');
-          b.className = 'w-full rounded-lg border border-slate-800 bg-slate-900/50 p-3 text-left hover:border-slate-600';
-          b.innerHTML = `<div class="text-sm font-semibold">${t.ad ? t.ad.title : 'Объявление удалено'}</div><div class="mt-1 text-xs text-slate-400">${t.last.senderName}: ${t.last.text.slice(0, 80)}</div>`;
-          b.addEventListener('click', () => openChat(t.adId));
-          root.append(b);
+        own.forEach((ad) => {
+          const box = document.createElement('div');
+          box.className = 'rounded-lg border border-slate-800 bg-slate-900/50 p-4';
+          box.innerHTML = `<div class="text-sm font-semibold">${ad.title}</div><div class="mt-1 text-xs text-slate-400">${formatDate(ad.createdAt)} | ${ad.mode} | ${ad.region}</div><div class="mt-2 text-sm text-slate-300">${ad.description}</div>`;
+          root.append(box);
+        });
+      };
+
+      const renderChatsList = () => {
+        const root = $('#chatsList');
+        root.innerHTML = '';
+        if (!state.profile) return;
+
+        const threads = [];
+        Object.entries(state.chats).forEach(([adId, msgs]) => {
+          const mine = msgs.some((m) => m.senderUid === state.profile.uid);
+          if (!mine) return;
+          const last = msgs[msgs.length - 1];
+          const ad = state.ads.find((a) => a.id === adId);
+          threads.push({ adId, ad, last });
+        });
+        threads.sort((a, b) => b.last.at - a.last.at);
+
+        if (!threads.length) {
+          root.innerHTML = '<div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-400">Сообщений пока нет.</div>';
+          return;
+        }
+
+        threads.forEach((t) => {
+          const btn = document.createElement('button');
+          btn.className = 'w-full rounded-lg border border-slate-800 bg-slate-900/50 p-3 text-left hover:border-slate-600';
+          btn.innerHTML = `<div class="text-sm font-semibold">${t.ad ? t.ad.title : 'Объявление удалено'}</div><div class="mt-1 text-xs text-slate-400">${t.last.senderName}: ${t.last.text.slice(0, 80)}</div>`;
+          btn.addEventListener('click', () => openChat(t.adId));
+          root.append(btn);
         });
       };
 
       const renderChat = () => {
-        const adId = state.activeChatAd;
+        const adId = state.activeChatAdId;
         if (!adId) return;
         const ad = state.ads.find((a) => a.id === adId);
-        const root = qs('#chatMessages');
+        const root = $('#chatMessages');
         root.innerHTML = '';
-        qs('#chatMeta').textContent = ad ? `${ad.title} | ${ad.author.nickname}` : 'Объявление удалено';
+        $('#chatMeta').textContent = ad ? `${ad.title} | ${ad.author.nickname}` : 'Объявление удалено';
 
         const msgs = state.chats[adId] || [];
         msgs.forEach((m) => {
@@ -494,82 +491,87 @@
 
       const renderSettings = () => {
         if (!state.profile) return;
-        const form = qs('#settingsForm');
-        form.nickname.value = state.profile.nickname;
-        form.gameId.value = state.profile.gameId;
-        form.clan.value = state.profile.clan || '';
+        const f = $('#settingsForm');
+        f.nickname.value = state.profile.nickname;
+        f.gameId.value = state.profile.gameId;
+        f.clan.value = state.profile.clan || '';
         setFieldValue('settingsRank', state.profile.rank);
         setFieldValue('settingsKd', state.profile.kd);
         setFieldValue('settingsHours', state.profile.hours);
       };
 
       const renderAll = () => {
-        renderAds();
-        renderThreads();
+        renderFeed();
+        renderMy();
+        renderChatsList();
         renderSettings();
       };
 
       const applyAuthState = () => {
-        qs('#authOverlay').classList.toggle('hidden', Boolean(state.profile));
+        $('#authOverlay').classList.toggle('hidden', Boolean(state.profile));
       };
 
-      const initPickerButtons = () => {
-        qsa('[data-target]').forEach((btn) => setPickerText(btn, qs(`#${btn.dataset.target}`).value));
+      const resetCreateForm = () => {
+        $('#createForm').reset();
+        setFieldValue('adMode', '');
+        setFieldValue('adRegion', '');
+        setFieldValue('adReqRank', '');
+        setFieldValue('adReqKd', '');
+        setFieldValue('adReqHours', '');
+        setFieldValue('adVoice', '');
+      };
 
-        qsa('[data-picker]').forEach((btn) => {
+      const bindPickerButtons = () => {
+        $$('[data-target]').forEach((btn) => setPickerButtonText(btn, $(`#${btn.dataset.target}`).value));
+
+        $$('[data-picker]').forEach((btn) => {
           btn.addEventListener('click', () => {
-            const targetId = btn.dataset.target;
+            const fieldId = btn.dataset.target;
             const key = btn.dataset.picker;
-            const current = qs(`#${targetId}`).value;
-
-            let options = LOOKUPS[key] || [];
-            if (targetId === 'adVoice') options = LOOKUPS.adVoice;
-
-            let empty = null;
-            if (targetId.startsWith('f') || ['adReqRank', 'adReqKd', 'adReqHours', 'adVoice'].includes(targetId)) {
-              empty = btn.dataset.empty;
-            }
+            const options = PICKERS[key] || [];
+            const current = $(`#${fieldId}`).value;
+            const empty = btn.dataset.empty || null;
 
             openPicker({
               title: btn.dataset.label,
               options,
               current,
-              allowEmpty: empty,
+              emptyLabel: empty,
               onPick: (value) => {
-                if (targetId === 'adVoice') {
-                  setFieldValue(targetId, value === 'Нужен голос' ? '1' : value === 'Голос не нужен' ? '0' : '');
-                  setPickerText(btn, value || btn.dataset.empty);
+                if (fieldId === 'adVoice') {
+                  setFieldValue('adVoice', value === 'Нужен голос' ? '1' : value === 'Без голоса' ? '0' : '');
+                  setPickerButtonText(btn, value || empty);
                 } else {
-                  setFieldValue(targetId, value);
+                  setFieldValue(fieldId, value);
                 }
-                renderAds();
+                renderFeed();
               }
             });
           });
         });
       };
 
-      const sanitizeGameIdInput = (input) => {
+      const bindGameIdInput = (input) => {
         input.addEventListener('input', () => {
-          input.value = input.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 20);
+          input.value = input.value.replace(/[^A-Za-z0-9]/g, '').slice(0, 20);
         });
       };
 
-      qs('#authForm').addEventListener('submit', (e) => {
+      $('#authForm').addEventListener('submit', (e) => {
         e.preventDefault();
-        const form = e.currentTarget;
+        const f = e.currentTarget;
         const profile = {
           uid: uid(),
-          nickname: sanitize(form.nickname.value).slice(0, 20),
-          gameId: sanitize(form.gameId.value),
-          clan: sanitize(form.clan.value).slice(0, 20),
-          rank: form.rank.value,
-          kd: form.kd.value,
-          hours: form.hours.value
+          nickname: sanitize(f.nickname.value).slice(0, 20),
+          gameId: sanitize(f.gameId.value),
+          clan: sanitize(f.clan.value).slice(0, 20),
+          rank: f.rank.value,
+          kd: f.kd.value,
+          hours: f.hours.value
         };
 
-        if (!idValid(profile.gameId)) {
-          alert('ID: 4-20 символов, только буквы и цифры.');
+        if (!isValidGameId(profile.gameId)) {
+          alert('ID: 4-20 символов, только латинские буквы и цифры.');
           return;
         }
         if (!profile.rank || !profile.kd || !profile.hours) {
@@ -578,99 +580,93 @@
         }
 
         state.profile = profile;
-        save(KEYS.profile, profile);
+        save(KEYS.profile, state.profile);
         applyAuthState();
         renderAll();
       });
 
-      qs('#settingsForm').addEventListener('submit', (e) => {
+      $('#settingsForm').addEventListener('submit', (e) => {
         e.preventDefault();
         if (!state.profile) return;
-        const form = e.currentTarget;
-        const nextId = sanitize(form.gameId.value);
+        const f = e.currentTarget;
+        const nextGameId = sanitize(f.gameId.value);
 
-        if (!idValid(nextId)) {
-          alert('ID: 4-20 символов, только буквы и цифры.');
+        if (!isValidGameId(nextGameId)) {
+          alert('ID: 4-20 символов, только латинские буквы и цифры.');
           return;
         }
 
-        state.profile.nickname = sanitize(form.nickname.value).slice(0, 20);
-        state.profile.gameId = nextId;
-        state.profile.clan = sanitize(form.clan.value).slice(0, 20);
-        state.profile.rank = form.rank.value;
-        state.profile.kd = form.kd.value;
-        state.profile.hours = form.hours.value;
-        save(KEYS.profile, state.profile);
+        state.profile.nickname = sanitize(f.nickname.value).slice(0, 20);
+        state.profile.gameId = nextGameId;
+        state.profile.clan = sanitize(f.clan.value).slice(0, 20);
+        state.profile.rank = f.rank.value;
+        state.profile.kd = f.kd.value;
+        state.profile.hours = f.hours.value;
 
+        save(KEYS.profile, state.profile);
         state.ads = state.ads.map((ad) => ad.authorUid === state.profile.uid ? { ...ad, author: { ...state.profile } } : ad);
         save(KEYS.ads, state.ads);
         sync();
         renderAll();
       });
 
-      qs('#logoutBtn').addEventListener('click', () => {
+      $('#logoutBtn').addEventListener('click', () => {
         if (!confirm('Сбросить текущий профиль?')) return;
         localStorage.removeItem(KEYS.profile);
         state.profile = null;
         applyAuthState();
       });
 
-      qsa('.tab-btn').forEach((btn) => btn.addEventListener('click', () => showTab(btn.dataset.tab)));
-
-      qs('#toggleFilters').addEventListener('click', () => qs('#filtersPanel').classList.toggle('hidden'));
-      qs('#searchInput').addEventListener('input', renderAds);
-      qs('#resetFilters').addEventListener('click', () => {
-        qs('#searchInput').value = '';
-        ['fMode', 'fRegion', 'fRank', 'fKd', 'fHours', 'fVoice'].forEach((id) => setFieldValue(id, ''));
-        renderAds();
+      $('#createOpenBtn').addEventListener('click', () => {
+        if (!state.profile) {
+          alert('Сначала создай профиль.');
+          return;
+        }
+        $('#createModal').classList.remove('hidden');
+        $('#createModal').classList.add('flex');
       });
 
-      qs('#openCreate').addEventListener('click', () => {
-        if (!state.profile) return;
-        qs('#createModal').classList.remove('hidden');
-        qs('#createModal').classList.add('flex');
+      $('#createCloseBtn').addEventListener('click', () => {
+        $('#createModal').classList.add('hidden');
+        $('#createModal').classList.remove('flex');
       });
 
-      qs('#closeCreate').addEventListener('click', () => {
-        qs('#createModal').classList.add('hidden');
-        qs('#createModal').classList.remove('flex');
-      });
-
-      qs('#adForm').addEventListener('submit', (e) => {
+      $('#createForm').addEventListener('submit', (e) => {
         e.preventDefault();
         if (!state.profile) return;
-        const form = e.currentTarget;
-        const title = sanitize(form.title.value);
-        const description = sanitize(form.description.value);
-        const textCheck = `${title} ${description}`;
+        const f = e.currentTarget;
+        const title = sanitize(f.title.value);
+        const description = sanitize(f.description.value);
+        const combined = `${title} ${description}`;
 
-        if (!form.mode.value || !form.region.value) {
+        if (!f.mode.value || !f.region.value) {
           alert('Выбери режим и регион.');
           return;
         }
-        if (title.length < 5 || description.length < 10) {
-          alert('Сделай заголовок и описание чуть подробнее.');
+        if (title.length < 4 || description.length < 8) {
+          alert('Слишком короткий текст объявления.');
           return;
         }
-        if (hasLink(textCheck) || hasBanned(textCheck)) {
-          alert('Объявление отклонено модерацией.');
+        if (hasLink(combined) || hasBanned(combined)) {
+          alert('Объявление не прошло модерацию.');
           return;
         }
 
-        const lim = getLimit();
+        const lim = getLimitState();
         const now = Date.now();
-        lim.adTimes = lim.adTimes.filter((x) => now - x < 24 * 60 * 60 * 1000);
+        lim.adTimes = lim.adTimes.filter((t) => now - t < 24 * 60 * 60 * 1000);
+
         if (lim.adTimes.length >= 8) {
-          alert('Лимит объявлений за 24 часа исчерпан.');
+          alert('Лимит: 8 объявлений за 24 часа.');
           return;
         }
         if (lim.adTimes.length && now - lim.adTimes[lim.adTimes.length - 1] < 90 * 1000) {
-          alert('Подожди немного перед следующим объявлением.');
+          alert('Подожди 90 секунд перед новым объявлением.');
           return;
         }
 
-        const adHash = `${title.toLowerCase()}|${description.toLowerCase()}`;
-        if (lim.lastAdHash === adHash) {
+        const hash = `${title.toLowerCase()}|${description.toLowerCase()}`;
+        if (lim.lastAdHash === hash) {
           alert('Повтор объявления заблокирован.');
           return;
         }
@@ -682,120 +678,119 @@
           author: { ...state.profile },
           title,
           description,
-          mode: form.mode.value,
-          region: form.region.value,
-          reqRank: form.reqRank.value,
-          reqKd: form.reqKd.value,
-          reqHours: form.reqHours.value,
-          voice: form.voice.value === '1'
+          mode: f.mode.value,
+          region: f.region.value,
+          reqRank: f.reqRank.value,
+          reqKd: f.reqKd.value,
+          reqHours: f.reqHours.value,
+          voiceNeeded: f.voice.value === '1'
         };
 
         state.ads.push(ad);
         lim.adTimes.push(now);
-        lim.lastAdHash = adHash;
+        lim.lastAdHash = hash;
+
         save(KEYS.ads, state.ads);
         save(KEYS.limits, state.limits);
         sync();
-        form.reset();
-        setFieldValue('adMode', '');
-        setFieldValue('adRegion', '');
-        setFieldValue('adReqRank', '');
-        setFieldValue('adReqKd', '');
-        setFieldValue('adReqHours', '');
-        setFieldValue('adVoice', '');
-        qs('#createModal').classList.add('hidden');
-        qs('#createModal').classList.remove('flex');
+        resetCreateForm();
+        $('#createModal').classList.add('hidden');
+        $('#createModal').classList.remove('flex');
         renderAll();
       });
 
-      qs('#closeChat').addEventListener('click', () => {
-        state.activeChatAd = null;
-        qs('#chatPanel').classList.add('hidden');
+      $('#chatCloseBtn').addEventListener('click', () => {
+        state.activeChatAdId = null;
+        $('#chatPanel').classList.add('hidden');
       });
 
-      qs('#chatForm').addEventListener('submit', (e) => {
+      $('#chatForm').addEventListener('submit', (e) => {
         e.preventDefault();
-        if (!state.profile || !state.activeChatAd) return;
-        const ad = state.ads.find((x) => x.id === state.activeChatAd);
+        if (!state.profile || !state.activeChatAdId) return;
+
+        const ad = state.ads.find((x) => x.id === state.activeChatAdId);
         if (ad && ad.authorUid === state.profile.uid) {
           alert('Нельзя писать самому себе.');
           return;
         }
 
-        const input = qs('#chatInput');
-        const txt = sanitize(input.value);
-        if (txt.length < 2) return;
-        if (hasLink(txt) || hasBanned(txt)) {
-          alert('Сообщение отклонено модерацией.');
+        const input = $('#chatInput');
+        const text = sanitize(input.value);
+        if (text.length < 2) return;
+        if (hasLink(text) || hasBanned(text)) {
+          alert('Сообщение не прошло модерацию.');
           return;
         }
 
-        const lim = getLimit();
+        const lim = getLimitState();
         const now = Date.now();
-        if (now - lim.lastChatAt < 4000) {
+        if (now - lim.lastMsgAt < 4000) {
           alert('Подожди 4 секунды перед новым сообщением.');
           return;
         }
-        const msgHash = txt.toLowerCase();
+        const msgHash = text.toLowerCase();
         if (msgHash === lim.lastMsgHash) {
           alert('Повтор сообщения заблокирован.');
           return;
         }
 
-        if (!state.chats[state.activeChatAd]) state.chats[state.activeChatAd] = [];
-        state.chats[state.activeChatAd].push({
+        if (!state.chats[state.activeChatAdId]) state.chats[state.activeChatAdId] = [];
+        state.chats[state.activeChatAdId].push({
           id: uid(),
           senderUid: state.profile.uid,
           senderName: state.profile.nickname,
-          text: txt,
+          text,
           at: now
         });
 
-        lim.lastChatAt = now;
+        lim.lastMsgAt = now;
         lim.lastMsgHash = msgHash;
+
         save(KEYS.chats, state.chats);
         save(KEYS.limits, state.limits);
         sync();
         input.value = '';
         renderChat();
-        renderThreads();
+        renderChatsList();
       });
 
-      qs('#pickerClose').addEventListener('click', closePicker);
+      $('#filtersToggleBtn').addEventListener('click', () => $('#filtersPanel').classList.toggle('hidden'));
+      $('#filtersResetBtn').addEventListener('click', () => {
+        $('#searchInput').value = '';
+        ['filterMode', 'filterRegion', 'filterRank', 'filterKd', 'filterHours', 'filterVoice'].forEach((id) => setFieldValue(id, ''));
+        renderFeed();
+      });
+      $('#searchInput').addEventListener('input', renderFeed);
+
+      $$('.tab-btn').forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
+      $('#pickerCloseBtn').addEventListener('click', closePicker);
 
       const onRemoteSync = () => {
         state.ads = load(KEYS.ads, []);
         state.chats = load(KEYS.chats, {});
         state.limits = load(KEYS.limits, {});
         renderAll();
-        if (state.activeChatAd) renderChat();
+        if (state.activeChatAdId) renderChat();
       };
 
       if (channel) channel.onmessage = onRemoteSync;
       window.addEventListener('storage', (e) => {
-        if ([KEYS.ads, KEYS.chats, KEYS.limits, 'standleo_ping_v5'].includes(e.key)) onRemoteSync();
+        if ([KEYS.ads, KEYS.chats, KEYS.limits, 'standleo_sync_v6'].includes(e.key)) onRemoteSync();
       });
 
-      document.addEventListener('contextmenu', (e) => e.preventDefault());
-      document.addEventListener('keydown', (e) => {
-        const k = e.key.toLowerCase();
-        if (k === 'f12' || (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].includes(k)) || (e.ctrlKey && ['u', 's'].includes(k))) {
-          e.preventDefault();
-        }
-      });
+      bindGameIdInput($('#authGameId'));
+      bindGameIdInput($('#settingsGameId'));
+      bindPickerButtons();
 
       setFieldValue('authRank', RANKS[0]);
-      setFieldValue('authKd', KDS[0]);
-      setFieldValue('authHours', HOURS[0]);
+      setFieldValue('authKd', KD_VALUES[0]);
+      setFieldValue('authHours', HOUR_VALUES[0]);
       setFieldValue('settingsRank', RANKS[0]);
-      setFieldValue('settingsKd', KDS[0]);
-      setFieldValue('settingsHours', HOURS[0]);
+      setFieldValue('settingsKd', KD_VALUES[0]);
+      setFieldValue('settingsHours', HOUR_VALUES[0]);
 
-      sanitizeGameIdInput(qs('#authGameId'));
-      sanitizeGameIdInput(qs('#settingsGameId'));
-      initPickerButtons();
       applyAuthState();
-      showTab('feed');
+      setTab('feed');
       renderAll();
     })();
   </script>
